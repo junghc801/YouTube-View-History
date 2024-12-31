@@ -12,24 +12,29 @@ import components.simplewriter.SimpleWriter;
 import components.simplewriter.SimpleWriter1L;
 
 /**
- * Extract youtube links and viewing time from data.
+ * Extract youtube links, titles, channel links, channel names, and viewing time from data.
+ * To utilize this source, appropriate year and time zone must be defined before execution.
+ * 
+ * This version excludes post and music video histories. You may modify this feature in dataCleaning method.
  *
  * @author Haechan Jung
  */
-public final class ViewTime_Separator {
+public final class View_History_Extractor {
 
     /**
      * No argument constructor--private to prevent instantiation.
      */
-    private ViewTime_Separator() {
+    private View_History_Extractor() {
     }
+
+    private static final DateFormat oldFormat = new SimpleDateFormat(
+        "yyyy. MM. dd. a hh:mm:ss z", Locale.KOREA);
+    private static final SimpleDateFormat newFormat = new SimpleDateFormat(
+        "yyyy-MM-dd HH:mm:ss");
 
     private static String timeFilter(SimpleReader in) {
         boolean done = false;
-        DateFormat oldFormat = new SimpleDateFormat(
-                "yyyy. MM. dd. a hh:mm:ss z", Locale.KOREA);
-        SimpleDateFormat newFormat = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss");
+        
         String result = "";
         while (!in.atEOS() && !done) {
             String time;
@@ -37,7 +42,7 @@ public final class ViewTime_Separator {
             if (chr == '2') {
                 time = "2" + in.read() + in.read() + in.read() + in.read()
                         + in.read();
-                if (time.equals("2024. ")) {
+                if (time.equals("2024. ")) { 
                     while (!time.contains("KST")) {
                         time += in.read();
                     }
@@ -86,15 +91,12 @@ public final class ViewTime_Separator {
                         result += chr;
                         chr = in.read();
                     }
-                    if (result.contains("youtube.com")
-                            && !result.contains("youtube.com/post/")) {
+                    if (result.contains("youtube.com/")) {
                         found = true;
+                        
                     }
                 }
             }
-        }
-        if (result.contains("music.youtube.com/")) {
-            return null;
         }
         if (found) {
             in.read(); // '>'
@@ -110,14 +112,11 @@ public final class ViewTime_Separator {
             result += chr;
             chr = in.read();
         }
-        // If title has '<'
+        // In case when title has '<'
         String separator = "<" + in.read() + in.read() + in.read(); // '</a>'
         if (!separator.equals("</a>")) {
             result += separator;
             result += titleFilter(in);
-        }
-        if (result.contains("https://www.youtube.com/watch?v")) {
-            return null;
         }
         return result;
     }
@@ -128,8 +127,9 @@ public final class ViewTime_Separator {
 
         while (!in.atEOS()) {
             String result = linkFilter(in);
-            if (result == null) {
-                linkFilter(in);
+            if (result.contains("youtube.com/post/") ||     // Exclude post history
+                result.contains("music.youtube.com/") ) {   // Exclud music video history
+                timeFilter(in);
                 continue;
             }
             if (result.length() < 1) {
@@ -137,36 +137,24 @@ public final class ViewTime_Separator {
             }
             link.enqueue(result);
             result = titleFilter(in);
-
-            if (result == null) { // if deleted
-                link.rotate(-1);
-                link.dequeue();
-                link.rotate(1);
+            if (result.contains("youtube.com/watch")) { // if deleted video 
+                title.enqueue("deleted");
+                channelLink.enqueue("Unknown");
+                channelName.enqueue("Unknown");
+                result = timeFilter(in);
+                if (result.length() < 1) {
+                    break;
+                }
+                time.enqueue(result);
                 continue;
             }
             if (result.length() < 1) {
                 break;
             }
-            result = result.replace(',', '_');
+            result = result.replace(',', '_');  // To avoid wrong separation while making csv
             result = result.replace('/', '\\');
             title.enqueue(result);
-
             result = linkFilter(in);
-            
-            /*
-             * Should be deleted eventually=======================================================
-             */ 
-            if (result == null) {
-                title.rotate(-1);
-                result = title.dequeue();
-                title.rotate(1);
-                System.out.println(result);
-            }
-            /*
-             * Should be deleted eventually=======================================================
-             */ 
-
-
             if (result.length() < 1) {
                 break;
             }
@@ -195,7 +183,7 @@ public final class ViewTime_Separator {
         assert link.length() == time
                 .length() : "Violation of: two queues have correponding data";
 
-        out.println("link,title,channel_link,channel_name,time");
+        out.println("link,title,channel_link,channel_name,time"); // column names
         while (link.length() > 0) {
             out.print(link.dequeue() + ",");
             out.print(title.dequeue() + ",");
@@ -213,8 +201,7 @@ public final class ViewTime_Separator {
      *            the command line arguments
      */
     public static void main(String[] args) {
-        SimpleReader in = new SimpleReader1L(
-                "data\\ViewData.txt");
+        SimpleReader in = new SimpleReader1L("data\\ViewData.txt");
         Queue<String> link = new Queue1L<>();           // youtube video link
         Queue<String> title = new Queue1L<>();          // youtube video title
         Queue<String> channelLink = new Queue1L<>();    // youtube channel name
@@ -222,22 +209,7 @@ public final class ViewTime_Separator {
         Queue<String> time = new Queue1L<>();           // viewing time
 
         dataCleaning(in, link, title, channelLink, channelName, time); // extract youtube address and view time
-
-        /*
-         * Should be deleted eventually=======================================================
-         */ 
-        SimpleWriter o = new SimpleWriter1L();
-        o.println("link=====" + link.length()); // Should be deleted eventually
-        o.println("title=====" + title.length());
-        o.println("Channel_Link=====" + channelLink.length());
-        o.println("Channel_Name=====" + channelName.length());
-        /*
-         * Should be deleted eventually=======================================================
-         */ 
-
-
-        SimpleWriter out = new SimpleWriter1L(
-                "output\\YouTube_View_History.csv");
+        SimpleWriter out = new SimpleWriter1L("output\\YouTube_View_History.csv");
         dataFraming(out, link, title, channelLink, channelName, time); // print data into text file
         /*
          * Close input and output streams
