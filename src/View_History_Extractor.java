@@ -200,15 +200,18 @@ public final class View_History_Extractor {
      *            the command line arguments
      */
     public static void main(String[] args) {
-        SimpleReader in = new SimpleReader1L("data\\시청 기록.html");
+        // ================NEED TO BE REPLACED================
+        SimpleReader in = new SimpleReader1L("data/시청 기록.html");
         Queue<String> link = new Queue1L<>();           // youtube video link
         Queue<String> title = new Queue1L<>();          // youtube video title
         Queue<String> channelLink = new Queue1L<>();    // youtube channel name
         Queue<String> channelName = new Queue1L<>();    // youtube channel name
         Queue<String> time = new Queue1L<>();           // viewing time
 
-        dataCleaning(in, link, title, channelLink, channelName, time); // extract youtube address and view time
-        SimpleWriter out = new SimpleWriter1L("output\\YouTube_View_History.csv");
+        dataCleaning(in, link, title, channelLink, channelName, time); // extract youtube data
+        // ================NEED TO BE REPLACED================
+        String folder = "output"; // ================NEED TO BE REPLACED================
+        SimpleWriter out = new SimpleWriter1L(folder + "/YouTube_View_History.csv");
         dataFraming(out, link, title, channelLink, channelName, time); // print data into text file
         /*
          * Close input and output streams
