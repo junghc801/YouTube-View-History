@@ -14,17 +14,17 @@ import components.simplewriter.SimpleWriter1L;
 /**
  * Extract youtube links, titles, channel links, channel names, and viewing time from data.
  * 
- * This version excludes post and music video histories. You can modify this feature in dataCleaning method.
+ * This version excludes music video histories. You can modify this feature in dataCleaning method.
  *
  * @author Haechan Jung
  */
 // TODO: Appropriate year and time zone must be defined before execution.
-public final class View_History_Extractor {
+public final class View_History_Extractor_including_Post {
 
     /**
      * No argument constructor--private to prevent instantiation.
      */
-    private View_History_Extractor() {
+    private View_History_Extractor_including_Post() {
     }
 
     private static final DateFormat oldFormat = new SimpleDateFormat(
@@ -126,8 +126,7 @@ public final class View_History_Extractor {
 
         while (!in.atEOS()) {
             String result = linkFilter(in);
-            if (result.contains("youtube.com/post/") ||     // Exclude post history
-                result.contains("music.youtube.com/") ) {   // Exclud music video history
+            if (result.contains("music.youtube.com/") ) {   // Exclud music video history
                 timeFilter(in);
                 continue;
             }
@@ -136,10 +135,10 @@ public final class View_History_Extractor {
             }
             link.enqueue(result);
             result = titleFilter(in);
-            if (result.contains("youtube.com/watch")) { // if deleted video 
-                title.enqueue("deleted");
-                channelLink.enqueue("Unknown");
-                channelName.enqueue("Unknown");
+            if (result.contains("youtube.com/watch")) { // if deleted or undisclosed video 
+                title.enqueue("unknown");
+                channelLink.enqueue("unknown");
+                channelName.enqueue("unknown");
                 result = timeFilter(in);
                 if (result.length() < 1) {
                     break;
@@ -208,7 +207,7 @@ public final class View_History_Extractor {
         Queue<String> time = new Queue1L<>();           // viewing time
 
         dataCleaning(in, link, title, channelLink, channelName, time); // extract youtube address and view time
-        SimpleWriter out = new SimpleWriter1L("output\\YouTube_View_History.csv");
+        SimpleWriter out = new SimpleWriter1L("output\\YouTube_View_History_with_Post.csv");
         dataFraming(out, link, title, channelLink, channelName, time); // print data into text file
         /*
          * Close input and output streams
