@@ -2,7 +2,7 @@
 
 The purpose of this repo is to offer a program that extracts useful information from YouTube View History data
 
-## 
+**Note**: View_History_Extractor.java needs OSU components to execute. You can find it lib folder or download [here](https://cse22x1.engineering.osu.edu/common/components.jar). If you are interested, you may look over [OSU API](https://cse22x1.engineering.osu.edu/common/doc/)
 
 ## How to Extract your data
 
@@ -79,31 +79,11 @@ if (time.equals("1587. ") || time.equals("1588. ")) {
                     }
 ```
 
-### 
+### Step 5: RUN it!
+
+You are good to extract your data now. Run the program and enjoy your data.
 
 
-
-
-
-
-
-**Note**: if you're using VSCode for class projects, you might be wondering
-why you never had to do this. In general, it's bad practice to commit binaries
-to version control. However, we have no way of managing dependencies with the
-custom `components.jar`, so I included them directly in the template. I did not
-include them here, so you could see how it might be done from scratch. If at any
-point you're struggling with Step 3, just copy the lib folder from the monorepo
-template.
-
-## Next Steps
-
-<!-- TODO: navigate to part 1 of the portfolio project and delete this comment -->
-
-Now that you have everything setup, you can begin crafting your component. There
-will be deadlines for each step in Carmen, but you're free to complete each step
-as early as you'd like. To start, you'll want to visit the [doc](doc/) directory
-for each assignment file.
+**Note**: There are some cases that the csv files does not show titles correctly or have other kinds of problems. It is possible that the problems are on Excel itself, rather than malfunctioning of the program. I suggest you to browse any similar cases of your issue first, and contact `junghc.801@gmail.com` if you cannot find one.
 
 [components-jar]: https://cse22x1.engineering.osu.edu/common/components.jar
-[jdk-downloads]: https://www.oracle.com/java/technologies/downloads/
-[use-this-template]: https://github.com/new?template_name=portfolio-project&template_owner=jrg94
