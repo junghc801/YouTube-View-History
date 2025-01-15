@@ -2,7 +2,7 @@
 
 The purpose of this repo is to offer a program that extracts useful information from YouTube View History data
 
-**Note**: View_History_Extractor.java needs OSU components to execute. You can find it lib folder or download [here](https://cse22x1.engineering.osu.edu/common/components.jar). If you are interested, you may look over [OSU API](https://cse22x1.engineering.osu.edu/common/doc/)
+**Note**: View_History_Extractor.java needs OSU components to execute. You can find it in the lib folder or download [here](https://cse22x1.engineering.osu.edu/common/components.jar). If you are interested, you may look over [OSU API](https://cse22x1.engineering.osu.edu/common/doc/)
 
 ## How to Extract your data
 
@@ -79,11 +79,11 @@ if (time.equals("1587. ") || time.equals("1588. ")) {
                     }
 ```
 
-### Step 5: RUN it!
+### Step 5: RUN IT!
 
 You are good to extract your data now. Run the program and enjoy your data.
 
 
-**Note**: There are some cases that the csv files does not show titles correctly or have other kinds of problems. It is possible that the problems are on Excel itself, rather than malfunctioning of the program. I suggest you to browse any similar cases of your issue first, and contact `junghc.801@gmail.com` if you cannot find one.
+**Note**: There are some cases that the created csv files do not show titles correctly or have other kinds of problems. It is possible that the problems are on Excel itself, rather than a malfunctioning of the program. I suggest you to browse any similar cases of your issue first, and contact `junghc.801@gmail.com` if you cannot find one.
 
 [components-jar]: https://cse22x1.engineering.osu.edu/common/components.jar
